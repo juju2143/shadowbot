@@ -1,0 +1,8 @@
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\bin\Debug\ShadowBot.exe
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\bin\Debug\ShadowBot.pdb
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\bin\Debug\Nini.dll
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.Properties.Resources.resources
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.csproj.GenerateResource.Cache
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.exe
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.pdb

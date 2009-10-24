@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using Nini.Config;
+using AIMLbot;
 
 namespace ShadowBot
 {
@@ -31,6 +32,8 @@ namespace ShadowBot
         //ListViewItem row;
         DateTime LastCheck = DateTime.Now;
 
+        Bot bot = new Bot();
+
         /// <summary>
         /// Point d'entrée principal de l'application.
         /// </summary>
@@ -51,6 +54,7 @@ namespace ShadowBot
             }
             if (argv.Configs["Options"].Contains("debug"))
                 debug = true;
+
             ShadowBot IRCApp = new ShadowBot(argv.Configs["Options"].Get("config", "ShadowBot.ini"));
         }
 
@@ -75,6 +79,11 @@ namespace ShadowBot
             IrcObject.eventPart += new Part(IrcObject_eventPart);
             IrcObject.eventNamesList += new NamesList(IrcObject_eventNamesList);
             //IrcObject.eventQuit += new Quit(IrcObject_eventQuit);
+
+            bot.loadSettings();
+            bot.isAcceptingUserInput = false;
+            bot.loadAIMLFromFiles();
+            bot.isAcceptingUserInput = true;
 
             Thread t = new Thread(CheckForNewFeeds);
             t.Start();
@@ -147,7 +156,7 @@ namespace ShadowBot
             //IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcChannel + " :Awww, " + UserQuit + " quitted...");
             //IrcObject.IrcWriter.Flush();
             if (Registered.Contains(UserQuit))
-                Registered.Remove(UserQuit);
+                Registered.Remove(UserQuit); 
             Userlist.Remove(UserQuit);
         }
 
@@ -259,7 +268,14 @@ namespace ShadowBot
                         {
                             CallCheck = "";
                         }
-
+                        
+                        if (cmd.StartsWith(":" + IrcObject.IrcNick + ", ") || Command[3].StartsWith(":" + IrcObject.IrcNick + ": "))
+                        {
+                            Result result = bot.Chat(cmd.Substring(Command[3].Length + 1), Nick);
+                            IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + Nick + ": " + result.Output);
+                            IrcObject.IrcWriter.Flush();
+                        }
+                        
                         if (!Command[2].StartsWith("#") && !Command[2].StartsWith("&"))
                         {
                             Command[2] = Nick;
@@ -823,7 +839,7 @@ namespace ShadowBot
                                         }
                                     }
                                 }
-                                if (Command[3] == "del")
+                                if (Command[3] == "del" && Command.Length == LengthParams)
                                 {
                                     IrcObject.IrcWriter.WriteLine("MODE " + Command[2] + " -v " + Nick);
                                     IrcObject.IrcWriter.Flush();
@@ -1489,6 +1505,11 @@ namespace ShadowBot
                                     IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + cs);
                                     IrcObject.IrcWriter.Flush();
                                 }
+                                if (Command[3] == "topic" && Command.Length >= LengthParams + 1)
+                                {
+                                    IrcObject.IrcWriter.WriteLine("TOPIC " + Command[2] + " :" + cmd.Substring(Command[3].Length + 3));
+                                    IrcObject.IrcWriter.Flush();
+                                }
                                 #endregion
                                 #region Kick/ban commands
                                 if ((Command[3] == "kick" || Command[3] == "k") && Command.Length >= LengthParams + 2)
@@ -1753,8 +1774,8 @@ namespace ShadowBot
             }
             catch (Exception ex)
             {
-                IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + Nick + ", I think you broke me, you should tell my master what's happened and tell him this message: " + ex.Message);
-                IrcObject.IrcWriter.Flush();
+                //IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + Nick + ", I think you broke me, you should tell my master what's happened and tell him this message: " + ex.Message);
+                //IrcObject.IrcWriter.Flush();
             }
         }
     }

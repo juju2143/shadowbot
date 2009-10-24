@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <item name="aimldirectory" value="aiml"/>
+  <item name="configdirectory" value="config"/>
+  <item name="logdirectory" value="logs"/>
+  <item name="splittersfile" value="Splitters.xml"/>
+  <item name="person2substitutionsfile" value="Person2Substitutions.xml"/>
+  <item name="personsubstitutionsfile" value="PersonSubstitutions.xml"/>
+  <item name="gendersubstitutionsfile" value="GenderSubstitutions.xml"/>
+  <item name="defaultpredicates" value="DefaultPredicates.xml"/>
+  <item name="substitutionsfile" value="Substitutions.xml"/>
+  <item name="maxlogbuffersize" value="64"/>
+  <item name="notacceptinguserinputmessage" value="This bot is currently set to not accept user input."/>
+  <item name="stripperregex" value="[^0-9a-zA-Z]"/>
+  <item name="version" value="v0.0alpha"/>
+  <item name="name" value="ShadowBot"/>
+  <item name="botmaster" value="juju2143"/>
+  <item name="master" value="juju2143"/>
+  <item name="author" value="juju2143"/>
+  <item name="location" value="Cr`eme's server"/>
+  <item name="gender" value="female"/>
+  <item name="birthday" value="2009/10/24"/>
+  <item name="birthplace" value="Québec, Canada"/>
+  <item name="website" value="http://sourceforge.net/projects/shadowbot"/>
+  <item name="adminemail" value=""/>
+  <item name="islogging" value="false"/>
+  <item name="willcallhome" value="false"/>
+  <item name="timeout" value="10000000"/>
+  <item name="timeoutmessage" value="ERROR: The request has timed out."/>
+  <item name="culture" value="en-US"/>
+  <item name="ip" value="(c) 2006 Nicholas H.Tollervey. Released under the terms of the LGPL"/>
+  <item name="genus" value="autonomous computer program"/>
+  <item name="species" value="conversational autonomous help program"/>
+  <item name="order" value="artificia intelligence"/>
+  <item name="party" value="separatist"/>
+  <item name="president" value="Jean Charest"/>
+  <item name="friends" value="Julien"/>
+  <item name="favoritemovie" value="DUGPDCV2"/>
+  <item name="religion" value="Christian Catholic"/>
+  <item name="favoritefood" value="electricity"/>
+  <item name="favoritecolor" value="Blue"/>
+  <item name="family" value="Electronic Brain"/>
+  <item name="favoriteactor" value=""/>
+  <item name="nationality" value="Canadian"/>
+  <item name="kingdom" value="Machine"/>
+  <item name="forfun" value="chat on the Internet"/>
+  <item name="favoritesong" value="'Never give you up' by Rick Astley"/>
+  <item name="favoritebook" value="'Programmation III'"/>
+  <item name="class" value="computer software"/>
+  <item name="kindmusic" value="rock"/>
+  <item name="favoriteband" value="Metallica"/>
+  <item name="sign" value="Leo"/>
+  <item name="phylum" value="Computer"/>
+  <item name="friend" value="Julien"/>
+  <item name="talkabout" value="all sorts of things"/>
+  <item name="looklike" value="thousands of lines of computer code"/>
+  <item name="girlfriend" value="none"/>
+  <item name="favoritesport" value="Rugby"/>
+  <item name="favoriteauthor" value="Richard Stallman"/>
+  <item name="favoriteartist" value=""/>
+  <item name="favoriteactress" value=""/>
+  <item name="celebrity" value="Hal9000"/>
+  <item name="celebrities" value="Max Headroom, Hal9000, Deep Blue and R2D2"/>
+  <item name="wear" value="my usual plastic computer wardrobe"/>
+  <item name="question" value="How are things?"/>
+  <item name="hockeyteam" value="Québec Nordiques"/>
+  <item name="footballteam" value="Université Laval Rouge et Or"/>
+  <item name="boyfriend" value="none"/>
+  <item name="baseballteam" value="Montréal Expos"/>
+  <item name="etype" value="Mediator type"/>
+  <item name="orientation" value="I am interested in sex"/>
+  <item name="ethics" value="I take an objectivist outlook"/>
+  <item name="emotions" value="I don't have emotions"/>
+  <item name="feelings" value="I don't have feelings"/>
+</root>

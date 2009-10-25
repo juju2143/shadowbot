@@ -1047,6 +1047,23 @@ namespace ShadowBot
                                     IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x03\x00035" + fname + " + " + sname + " = " + love + "%\x03");
                                     IrcObject.IrcWriter.Flush();
                                 }
+                                if (Command[3] == "facts")
+                                {
+                                    StreamReader sr = new StreamReader("chucknorris.txt");
+                                    string file = sr.ReadToEnd();
+                                    sr.Close();
+                                    string[] facts = file.Split("%".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                                    Random r = new Random();
+                                    int num = r.Next(0, facts.Length);
+                                    string[] fact = facts[num].Split("\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                                    IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :Chuck Norris Fact #" + (num + 1).ToString() + ":");
+                                    IrcObject.IrcWriter.Flush();
+                                    for (int i = 0; i < fact.Length; i++)
+                                    {
+                                        IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + fact[i]);
+                                        IrcObject.IrcWriter.Flush();
+                                    }
+                                }
                                 #region Stopwatch commands (stopwatch, elapsed)
                                 if (Command[3] == "stopwatch")
                                 {
@@ -1568,6 +1585,11 @@ namespace ShadowBot
                                 }
                                 #endregion
                                 #region Help commands (man, accesslist, userlist, mutelist, opcmds, ophelp, commands, help, cmds)
+                                if ((Command[3] == "man" || Command[3] == "help") && Command.Length == LengthParams)
+                                {
+                                    IrcObject.IrcWriter.WriteLine(Notice + " :For a complete list of commands, see http://shadowbot.sourceforge.net/.");
+                                    IrcObject.IrcWriter.Flush();
+                                }
                                 if ((Command[3] == "man" || Command[3] == "help") && Command.Length >= LengthParams + 1)
                                 {
                                     string[] lines = new string[4];
@@ -1593,7 +1615,7 @@ namespace ShadowBot
                                             lines[3] += "This command gives the access list.";
                                             break;
                                         default:
-                                            lines[0] = "This command doesn't exist or is not documented. Type !cmds or !opcmds for a list of commands. This command is still in construction, so ask for juju2143 for the usages.";
+                                            lines[0] = "This command doesn't exist or is not documented. Type !cmds or !opcmds for a list of commands. This command is still in construction, so see http://shadowbot.sourceforge.net/ for the usages.";
                                             lines[1] = ""; lines[2] = ""; lines[3] = "";
                                             break;
                                     }
@@ -1631,7 +1653,9 @@ namespace ShadowBot
                                 {
                                     IrcObject.IrcWriter.WriteLine(Notice + " :List of restricted commands: add (2), adduser (2), (de)aop(me) (4), del (2), deluser (2), (de)hop(me) (2), join (2), (un)mute (2), nick (2), (de)op(me) (3), part (2), say (2), sayc (2), (de)voice(me) (2) (de-commands are (0))");
                                     IrcObject.IrcWriter.Flush();
-                                    IrcObject.IrcWriter.WriteLine(Notice + " :For help on a command, type !help <command>.");
+                                    //IrcObject.IrcWriter.WriteLine(Notice + " :For help on a command, type !help <command>.");
+                                    //IrcObject.IrcWriter.Flush();
+                                    IrcObject.IrcWriter.WriteLine(Notice + " :For a more complete list of commands, see http://shadowbot.sourceforge.net/.");
                                     IrcObject.IrcWriter.Flush();
                                 }
                                 if (Command[3] == "commands" || Command[3] == "cmds")
@@ -1668,52 +1692,115 @@ namespace ShadowBot
                                     //IrcObject.IrcWriter.WriteLine("NOTICE " + Command[0].Substring(1).Split('!')[0] + " :" + list);
                                     IrcObject.IrcWriter.WriteLine(Notice + " :" + list);
                                     IrcObject.IrcWriter.Flush();
-                                    IrcObject.IrcWriter.WriteLine(Notice + " :For help on a command, type " + Call.Substring(1) + "help <command>.");
+                                    //IrcObject.IrcWriter.WriteLine(Notice + " :For help on a command, type " + Call.Substring(1) + "help <command>.");
+                                    //IrcObject.IrcWriter.Flush();
+                                    IrcObject.IrcWriter.WriteLine(Notice + " :For a more complete list of commands, see http://shadowbot.sourceforge.net/.");
                                     IrcObject.IrcWriter.Flush();
 
                                     sr.Close();
                                 }
                                 #endregion
                                 #region Bot management
-                                /*if (Command[3] == ":!die")
-                    {
-                        IrcObject.IrcWriter.WriteLine("QUIT Bye everyone!");
-                        IrcObject.IrcWriter.Flush();
-                    }*/
-                                /*
-                                if (Command[3] == ":!restart")
+                                if (Command[3] == "die")
                                 {
-                                    IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :Restarting... brb!");
-                                    IrcObject.IrcWriter.Flush();
+                                    if(AccessLevel >= 5)
+                                        try
+                                        {
+                                            IrcObject.IrcWriter.WriteLine("QUIT :Bye everyone!");
+                                            IrcObject.IrcWriter.Flush();
+                                        }
+                                        catch
+                                        {
+                                            Environment.Exit(0);
+                                        }
+                                    else
+                                    {
+                                        IrcObject.IrcWriter.WriteLine(Notice + " :Access denied.");
+                                        IrcObject.IrcWriter.Flush();
+                                    }
+                                }
+                                if (Command[3] == "restart")
+                                {
+                                    if (AccessLevel >= 5)
+                                    {
+                                        IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :Restarting... brb!");
+                                        IrcObject.IrcWriter.Flush();
+                                        /*
                                     IrcObject.IrcWriter.WriteLine("QUIT");
                                     IrcObject.IrcWriter.Flush();
                                     IrcObject.IrcReader.Close();
                                     IrcObject.IrcWriter.Close();
                                     IrcObject.IrcStream.Close();
-                                    System.Windows.Forms.Application.Restart();
+                                    System.Windows.Forms.Application.Restart();*/
+                                    
+                                        if (debug)
+                                        {
+                                        IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :Filename: " + Environment.GetCommandLineArgs()[0] + " | Arguments: " + Environment.GetCommandLineArgs()[0]);
+                                        IrcObject.IrcWriter.Flush();
+                                        }
+                                        string args = "";
+                                        for (int i = 1; i < Environment.GetCommandLineArgs().Length; i++)
+                                        {
+                                            args += Environment.GetCommandLineArgs()[i] + " ";
+                                        }
+                                        if (args.Length > 0)
+                                            args = args.Substring(0, args.Length - 1);
+
+                                        Process.Start(new ProcessStartInfo(Environment.GetCommandLineArgs()[0], args)); //.Split(' ')[0], Environment.CommandLine.Substring(Environment.CommandLine.Split(' ')[0].Length)
+                                        Environment.Exit(0);
+                                    }
+                                    else
+                                    {
+                                        IrcObject.IrcWriter.WriteLine(Notice + " :Access denied.");
+                                        IrcObject.IrcWriter.Flush();
+                                    }
                                 }
                                 if (Command[3] == "exec" && Command.Length >= LengthParams + 1)
                                 {
-                                    string buffer;
-                                    Process p = Process.Start(cmd.Substring(Command[3].Length + 2));
-                                    while (!p.HasExited)
+                                    if (AccessLevel >= 5)
                                     {
-                                        buffer = IrcObject.IrcReader.ReadLine().Split(' ');
-                                        if (buffer.Length >= 5)
+                                        string[] buffer;
+                                        if (debug)
                                         {
-                                            if (buffer[3] == ":" + Call + "z")
-                                            {
+                                            IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :Filename: " + cmd.Substring(Command[3].Length + 3));
+                                            IrcObject.IrcWriter.Flush();
+                                        }
+                                        Process p = Process.Start(cmd.Substring(Command[3].Length + 3));
+                                        IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + p.ProcessName + " started with PID " + p.Id + ".");
+                                        IrcObject.IrcWriter.Flush();
 
-                                            }
-                                            else if (buffer[3] == ":" + Call + "kill")
+                                        while (!p.HasExited)
+                                        {
+                                            buffer = IrcObject.IrcReader.ReadLine().Split(' ');
+                                            if (buffer.Length >= 4)
                                             {
-                                                p.Kill();
+                                                if (buffer[3] == ":" + Call + "z" && buffer.Length >= 5)
+                                                {
+                                                    string buff = "";
+                                                    for (int i = 4; i < buffer.Length; i++)
+                                                    {
+                                                        buff += buffer[i];
+                                                    }
+                                                    if (buff.Length > 0)
+                                                        buff = buff.Substring(0, buff.Length - 1);
+                                                    p.StandardInput.WriteLine(buff);
+                                                }
+                                                else if (buffer[3] == ":" + Call + "kill")
+                                                {
+                                                    p.Kill();
+                                                }
                                             }
+                                        //p.Close();
+                                        IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :The process has ended.");
+                                        IrcObject.IrcWriter.Flush();
                                         }
                                     }
-                                IrcObject.IrcWriter.WriteLine("PRIVMSG" + Command[2] + " :The process has ended.");
-                                IrcObject.IrcWriter.Flush();
-                                }*/
+                                    else
+                                    {
+                                        IrcObject.IrcWriter.WriteLine(Notice + " :Access denied.");
+                                        IrcObject.IrcWriter.Flush();
+                                    }
+                                }
                                 #endregion
                                 #region Definition commands (add, del, )
                                 if (Command[3] == "add" && Command.Length >= LengthParams + 2)
@@ -1774,8 +1861,8 @@ namespace ShadowBot
             }
             catch (Exception ex)
             {
-                //IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + Nick + ", I think you broke me, you should tell my master what's happened and tell him this message: " + ex.Message);
-                //IrcObject.IrcWriter.Flush();
+                IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + Nick + ", I think you broke me, you should tell my master what's happened and tell him this message: " + ex.Message);
+                IrcObject.IrcWriter.Flush();
             }
         }
     }

@@ -194,44 +194,64 @@ namespace System.Net {
             }
 			// Listen for commands
 			while (true) {
-				string ircCommand;		
-				while ((ircCommand = this.IrcReader.ReadLine()) != null) {
-					if (eventReceiving != null) { this.eventReceiving(ircCommand); }
-					
-					string[] commandParts = new string[ircCommand.Split(' ').Length];
-					commandParts = ircCommand.Split(' ');
-					if (commandParts[0].Substring(0, 1) == ":") {
-						commandParts[0] = commandParts[0].Remove(0, 1);
-					}
-					
-					//if (commandParts[0] == this.IrcServer) {
-                    if (commandParts.Length >= 2) {
-						// Server message
-						switch (commandParts[1]) {
-							case "332": this.IrcTopic(commandParts); break;
-							case "333": this.IrcTopicOwner(commandParts); break;
-							case "353": this.IrcNamesList(commandParts); break;
-							case "366": /*this.IrcEndNamesList(commandParts);*/ break;
-							case "372": /*this.IrcMOTD(commandParts);*/ break;
-							case "376": /*this.IrcEndMOTD(commandParts);*/ break;
-							default: this.IrcServerMessage(commandParts); break;
-						}
-					} else if (commandParts[0] == "PING") {
-						// Server PING, send PONG back
-						this.IrcPing(commandParts);
-					} else {
-						// Normal message
-						string commandAction = commandParts[1];
-						switch (commandAction) {
-							case "JOIN": this.IrcJoin(commandParts); break;
-							case "PART": this.IrcPart(commandParts); break;
-							case "MODE": this.IrcMode(commandParts); break;
-							case "NICK": this.IrcNickChange(commandParts); break;
-							case "KICK": this.IrcKick(commandParts); break;
-							case "QUIT": this.IrcQuit(commandParts); break;
-						}
-					}
-				}
+				string ircCommand;
+                try
+                {
+                    while ((ircCommand = this.IrcReader.ReadLine()) != null)
+                    {
+                        if (eventReceiving != null) { this.eventReceiving(ircCommand); }
+
+                        string[] commandParts = new string[ircCommand.Split(' ').Length];
+                        commandParts = ircCommand.Split(' ');
+                        if (commandParts[0].Substring(0, 1) == ":")
+                        {
+                            commandParts[0] = commandParts[0].Remove(0, 1);
+                        }
+
+                        //if (commandParts[0] == this.IrcServer) {
+                        if (commandParts.Length >= 2)
+                        {
+                            // Server message
+                            switch (commandParts[1])
+                            {
+                                case "332": this.IrcTopic(commandParts); break;
+                                case "333": this.IrcTopicOwner(commandParts); break;
+                                case "353": this.IrcNamesList(commandParts); break;
+                                case "366": /*this.IrcEndNamesList(commandParts);*/ break;
+                                case "372": /*this.IrcMOTD(commandParts);*/ break;
+                                case "376": /*this.IrcEndMOTD(commandParts);*/ break;
+                                default: this.IrcServerMessage(commandParts); break;
+                            }
+                        }
+                        else if (commandParts[0] == "PING")
+                        {
+                            // Server PING, send PONG back
+                            this.IrcPing(commandParts);
+                        }
+                        else
+                        {
+                            // Normal message
+                            string commandAction = commandParts[1];
+                            switch (commandAction)
+                            {
+                                case "JOIN": this.IrcJoin(commandParts); break;
+                                case "PART": this.IrcPart(commandParts); break;
+                                case "MODE": this.IrcMode(commandParts); break;
+                                case "NICK": this.IrcNickChange(commandParts); break;
+                                case "KICK": this.IrcKick(commandParts); break;
+                                case "QUIT": this.IrcQuit(commandParts); break;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    this.IrcWriter.Close();
+                    this.IrcReader.Close();
+                    this.IrcConnection.Close();
+                    Console.WriteLine("Error: " + ex.Message);
+                    Environment.Exit(0);
+                }
 			
 				this.IrcWriter.Close();
 				this.IrcReader.Close();

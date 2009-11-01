@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -13,6 +14,27 @@ using AIMLbot;
 
 namespace ShadowBot
 {
+
+    public class ReverseComparer<T> : IComparer<T>
+    {
+        public ReverseComparer(IComparer<T> comparer)
+        {
+                if (comparer == null)
+                {
+                        throw new ArgumentNullException("comparer");
+                }
+ 
+                this.Comparer = comparer;
+        }
+
+        private IComparer<T> Comparer { get; set; }
+
+        public int Compare(T x, T y)
+        {
+                return -this.Comparer.Compare(x,y);
+        }
+    }
+
     class ShadowBot
     {
         private IRC IrcObject;
@@ -25,6 +47,7 @@ namespace ShadowBot
         private bool cont = true;
         private bool joined = false;
         private static bool debug = false;
+        private int turn = 0;
 
         //create our FeedManager & FeedList items
         RssManager reader = new RssManager();
@@ -156,7 +179,11 @@ namespace ShadowBot
             //IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcChannel + " :Awww, " + UserQuit + " quitted...");
             //IrcObject.IrcWriter.Flush();
             if (Registered.Contains(UserQuit))
-                Registered.Remove(UserQuit); 
+            {
+                Registered.Remove(UserQuit);
+                IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcObject.IrcChannel + " :" + UserQuit + " have been eaten by a goat.");
+                IrcObject.IrcWriter.Flush();
+            }
             Userlist.Remove(UserQuit);
         }
 
@@ -167,9 +194,15 @@ namespace ShadowBot
             IrcObject.IrcWriter.WriteLine("NOTICE " + IrcUser + " :Awww, " + IrcUser + " parted...");
             IrcObject.IrcWriter.Flush();
             if (Registered.Contains(IrcUser))
+            {
                 Registered.Remove(IrcUser);
+                IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcChannel + " :" + IrcUser + " have been eaten by a goat.");
+                IrcObject.IrcWriter.Flush();
+            }
             if (IrcChannel == IrcObject.IrcChannel)
                 Userlist.Remove(IrcUser);
+            if (IrcUser == IrcObject.IrcUser && IrcChannel == IrcObject.IrcChannel)
+                Userlist.Clear();
         }
 
         void IrcObject_eventJoin(string IrcChannel, string IrcUser)
@@ -225,11 +258,21 @@ namespace ShadowBot
                 IrcObject.IrcWriter.Flush();
                 IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcChannel + " :Hey, " + UserKicker + ", you kicked me? Bad " + UserKicker + ".");
                 IrcObject.IrcWriter.Flush();
+                if (IrcChannel == IrcObject.IrcChannel)
+                    Userlist.Clear();
+                Registered.Clear();
             }
             else
             {
                 if (IrcChannel == IrcObject.IrcChannel)
                     Userlist.Remove(UserKicked);
+
+                if (Registered.Contains(UserKicked))
+                {
+                    Registered.Remove(UserKicked);
+                    IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcChannel + " :" + UserKicked + " have been eaten by a goat.");
+                    IrcObject.IrcWriter.Flush();
+                }
             }
         }
 
@@ -857,12 +900,15 @@ namespace ShadowBot
                                         started = true;
                                         Random r = new Random();
                                         roulette = r.Next(0, 6);
+                                        turn = 0;
                                         string cs = "";
                                         foreach (string person in Registered)
                                             cs += " " + person;
                                         IrcObject.IrcWriter.WriteLine("MODE " + Command[2] + " +m");
                                         IrcObject.IrcWriter.Flush();
                                         IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036Roulette game started! Type .roulette to play! Are you ready," + cs + "?\x03\x02");
+                                        IrcObject.IrcWriter.Flush();
+                                        IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036It's now your turn, " + Registered[turn] + "!\x03\x02");
                                         IrcObject.IrcWriter.Flush();
                                     }
                                     else
@@ -882,7 +928,8 @@ namespace ShadowBot
                                             Registered.Remove(Nick);
                                             if (Registered.Count == 1)
                                             {
-                                                IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036Congrats, " + Registered.ToArray()[0] + ", you are the last person alive! You won!\x03\x02");
+                                                ini.Configs["roulette"].Set(Registered.ToArray()[0], ini.Configs["roulette"].GetLong(Registered.ToArray()[0], 0) + 1);
+                                                IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036Congrats, " + Registered.ToArray()[0] + ", you are the last person alive! You won! Score: " + ini.Configs["roulette"].GetLong(Registered.ToArray()[0], 0).ToString() + "\x03\x02");
                                                 IrcObject.IrcWriter.Flush();
                                                 IrcObject.IrcWriter.WriteLine("MODE " + Command[2] + " -v " + Registered.ToArray()[0]);
                                                 IrcObject.IrcWriter.Flush();
@@ -890,6 +937,14 @@ namespace ShadowBot
                                                 IrcObject.IrcWriter.Flush();
                                                 Registered.Clear();
                                                 started = false;
+                                            }
+                                            else
+                                            {
+                                                turn++;
+                                                if (turn >= Registered.Count)
+                                                    turn = 0;
+                                                IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036It's now your turn, " + Registered[turn] + "!\x03\x02");
+                                                IrcObject.IrcWriter.Flush();
                                             }
                                             Random r = new Random();
                                             roulette = r.Next(0, 6);
@@ -899,6 +954,11 @@ namespace ShadowBot
                                             IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036CLICK\x03\x02");
                                             IrcObject.IrcWriter.Flush();
                                             roulette--;
+                                            turn++;
+                                            if (turn >= Registered.Count)
+                                                turn = 0;
+                                            IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036It's now your turn, " + Registered[turn] + "!\x03\x02");
+                                            IrcObject.IrcWriter.Flush();
                                         }
                                     }
                                 }
@@ -935,6 +995,27 @@ namespace ShadowBot
                                         cs += " " + person;
                                     IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036Still alive people are" + cs + ".\x03\x02");
                                     IrcObject.IrcWriter.Flush();
+                                }
+                                if (Command[3] == "roulettescores")
+                                {
+                                    string[] values = ini.Configs["roulette"].GetKeys();
+                                    long[] keys = new long[values.Length];
+
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        keys[i] = ini.Configs["roulette"].GetLong(ini.Configs["roulette"].GetKeys()[i], 0);
+                                    }
+
+                                    Array.Sort(keys, values);
+                                    Array.Reverse(keys);
+                                    Array.Reverse(values);
+
+                                    for (int i = 0; i < values.Length; i++)
+                                    {
+                                        IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036 " + (i + 1).ToString() + ". " + values[i].ToString() + ": " + keys[i] + "\x03\x02");
+                                        IrcObject.IrcWriter.Flush();
+                                        Thread.Sleep(1000);
+                                    }
                                 }
                                 if (Command[3] == "goat")
                                 {
@@ -1789,6 +1870,12 @@ namespace ShadowBot
                                                 {
                                                     p.Kill();
                                                 }
+                                            }
+                                            string output;
+                                            if ((output = p.StandardOutput.ReadLine()) != null)
+                                            {
+                                                IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + output);
+                                                IrcObject.IrcWriter.Flush();
                                             }
                                         //p.Close();
                                         IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :The process has ended.");

@@ -112,7 +112,6 @@ namespace ShadowBot
             t.Start();
 
             IrcObject.Connect(ini.Configs["Server"].Get("Server", "irc.freenode.net"), ini.Configs["Server"].GetInt("Port", 6667)); //(ini.IniReadValue("Server", "Server"), Convert.ToInt32(ini.IniReadValue("Server", "Port")));
-
         }
 
         void IrcObject_eventNamesList(string UserNames)
@@ -289,8 +288,8 @@ namespace ShadowBot
             string Nick = Command[0].Substring(1).Split('!')[0];
 
             
-            try
-            {
+            //try
+            //{
                 if (Command.Length >= 4)
                     if (Command[1] == "PRIVMSG")
                     {
@@ -1017,7 +1016,7 @@ namespace ShadowBot
                                         Thread.Sleep(1000);
                                     }
                                 }
-                                if (Command[3] == "goat")
+                                if (Command[3] == "goat" && Command.Length >= LengthParams + 1)
                                 {
                                     IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :\x02\x03\x00036" + cmd.Substring(Command[3].Length + 3) + " has been kicked by a goat. (by " + Nick + ")\x03\x02");
                                     IrcObject.IrcWriter.Flush();
@@ -1945,12 +1944,12 @@ namespace ShadowBot
                             //IrcObject.IrcWriter.Flush();
                         }
                     }
-            }
+            /*}
             catch (Exception ex)
             {
                 IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + Nick + ", I think you broke me, you should tell my master what's happened and tell him this message: " + ex.Message);
                 IrcObject.IrcWriter.Flush();
-            }
+            }*/
         }
     }
 }

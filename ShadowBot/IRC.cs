@@ -173,7 +173,7 @@ namespace System.Net {
             this.IrcWriter.WriteLine(String.Format("NICK {0}", this.IrcNick));
             this.IrcWriter.Flush();
             Thread.Sleep(100);
-			this.IrcWriter.WriteLine(String.Format("USER {0} {1} * :{2}", this.IrcUser, isInvisible, this.IrcRealName));
+			this.IrcWriter.WriteLine(String.Format("USER {0} * * :{2}", this.IrcUser, isInvisible, this.IrcRealName));
 			this.IrcWriter.Flush();
             Thread.Sleep(100);
             if (this.ircNickServ)
@@ -223,7 +223,7 @@ namespace System.Net {
                                 default: this.IrcServerMessage(commandParts); break;
                             }
                         }
-                        else if (commandParts[0] == "PING")
+                        if (commandParts[0] == "PING")
                         {
                             // Server PING, send PONG back
                             this.IrcPing(commandParts);
@@ -301,8 +301,11 @@ namespace System.Net {
 			for (int intI = 1; intI < IrcCommand.Length; intI++) {
 				PingHash += IrcCommand[intI] + " ";
 			}
+			//PingHash = IrcCommand[1];
+			PingHash = PingHash.Remove(PingHash.Length - 1, 1);
 			this.IrcWriter.WriteLine("PONG " + PingHash);
 			this.IrcWriter.Flush();
+			//Console.WriteLine("PONG " + PingHash);
 		} /* IrcPing */
 		#endregion
 		

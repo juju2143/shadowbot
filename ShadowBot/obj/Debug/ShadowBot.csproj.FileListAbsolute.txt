@@ -3,7 +3,8 @@ C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\bin\De
 C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\bin\Debug\Nini.dll
 C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ResolveAssemblyReference.cache
 C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.Properties.Resources.resources
-C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.csproj.GenerateResource.Cache
 C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.exe
 C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\obj\Debug\ShadowBot.pdb
 C:\Users\Julien\Documents\Visual Studio 2008\Projects\ShadowBot\ShadowBot\bin\Debug\AIMLbot.dll
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\shadowbot\ShadowBot\obj\Debug\ResGen.read.1.tlog
+C:\Users\Julien\Documents\Visual Studio 2008\Projects\shadowbot\ShadowBot\obj\Debug\ResGen.write.1.tlog

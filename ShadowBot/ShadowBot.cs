@@ -102,6 +102,7 @@ namespace ShadowBot
             IrcObject.eventPart += new Part(IrcObject_eventPart);
             IrcObject.eventNamesList += new NamesList(IrcObject_eventNamesList);
             //IrcObject.eventQuit += new Quit(IrcObject_eventQuit);
+            IrcObject.eventInvite += new Invite(IrcObject_eventInvite);
 
             bot.loadSettings();
             bot.isAcceptingUserInput = false;
@@ -112,6 +113,12 @@ namespace ShadowBot
             t.Start();
 
             IrcObject.Connect(ini.Configs["Server"].Get("Server", "irc.freenode.net"), ini.Configs["Server"].GetInt("Port", 6667)); //(ini.IniReadValue("Server", "Server"), Convert.ToInt32(ini.IniReadValue("Server", "Port")));
+        }
+
+        void IrcObject_eventInvite(string IrcChannel, string IrcUser)
+        {
+            IrcObject.IrcWriter.WriteLine("JOIN " + IrcChannel);
+            IrcObject.IrcWriter.Flush();
         }
 
         void IrcObject_eventNamesList(string UserNames)
@@ -243,7 +250,7 @@ namespace ShadowBot
             }
             else
             {
-                IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcChannel + " :Hello everyone!");
+                IrcObject.IrcWriter.WriteLine("PRIVMSG " + IrcChannel + " :Hello everyone! For help, type .help");
                 IrcObject.IrcWriter.Flush();
                 joined = true;
             }
@@ -1607,6 +1614,11 @@ namespace ShadowBot
                                     IrcObject.IrcWriter.WriteLine("TOPIC " + Command[2] + " :" + cmd.Substring(Command[3].Length + 3));
                                     IrcObject.IrcWriter.Flush();
                                 }
+                                if (Command[3] == "raw" && Command.Length >= LengthParams + 1)
+                                {
+                                    IrcObject.IrcWriter.WriteLine(cmd.Substring(Command[2].Length + 2));
+                                    IrcObject.IrcWriter.Flush();
+                                }
                                 #endregion
                                 #region Kick/ban commands
                                 if ((Command[3] == "kick" || Command[3] == "k") && Command.Length >= LengthParams + 2)
@@ -1848,6 +1860,8 @@ namespace ShadowBot
                                         Process p = Process.Start(cmd.Substring(Command[3].Length + 3));
                                         IrcObject.IrcWriter.WriteLine("PRIVMSG " + Command[2] + " :" + p.ProcessName + " started with PID " + p.Id + ".");
                                         IrcObject.IrcWriter.Flush();
+
+                                        
 
                                         while (!p.HasExited)
                                         {

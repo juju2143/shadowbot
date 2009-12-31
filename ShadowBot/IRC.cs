@@ -19,6 +19,7 @@ namespace System.Net {
 	public delegate void Kick(string IrcChannel, string UserKicker, string UserKicked, string KickMessage);
 	public delegate void Quit(string UserQuit, string QuitMessage);
     public delegate void EndMOTD();
+    public delegate void Invite(string IrcChannel, string IrcUser);
 	#endregion
 	
 	public class IRC {
@@ -34,6 +35,7 @@ namespace System.Net {
 		public event NickChange eventNickChange;
 		public event Kick eventKick;
 		public event Quit eventQuit;
+        public event Invite eventInvite;
 		#endregion
 		
 		#region Private Variables
@@ -240,6 +242,7 @@ namespace System.Net {
                                 case "NICK": this.IrcNickChange(commandParts); break;
                                 case "KICK": this.IrcKick(commandParts); break;
                                 case "QUIT": this.IrcQuit(commandParts); break;
+                                case "INVITE": this.IrcInvite(commandParts); break;
                             }
                         }
                     }
@@ -360,7 +363,18 @@ namespace System.Net {
 			}
 			if (eventQuit != null) { this.eventQuit(UserQuit, QuitMessage.Remove(0, 1).Trim()); }
 		} /* IrcQuit */
+
+        private void IrcInvite(string[] IrcCommand)
+        {
+            string IrcChannel = IrcCommand[3];
+            string IrcUser = IrcCommand[0].Split('!')[0];
+            if (eventInvite != null) { this.eventInvite(IrcChannel.Remove(0, 1), IrcUser); }
+        } /* IrcJoin */
 		#endregion
 		#endregion
 	} /* IRC */
+<<<<<<< .mine
 } /* System.Net */
+=======
+} /* System.Net */
+>>>>>>> .r6
